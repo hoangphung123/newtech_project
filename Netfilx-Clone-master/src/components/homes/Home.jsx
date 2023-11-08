@@ -3,6 +3,8 @@ import Slider from "react-slick"
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
 import HomeCard from "./HomeCard"
+import { useQuery } from "react-query"
+import * as ProductService from '../../services/ProductService'
 
 const SampleNextArrow = (props) => {
   const { onClick } = props
@@ -25,6 +27,12 @@ const SamplePrevArrow = (props) => {
   )
 }
 const Home = ({ items }) => {
+  // const fetchProductAll = async () => {
+  //   const res = await ProductService.getAllProduct()
+  //   return res
+  // }
+  // const {isLoading, data } = useQuery(['product'], fetchProductAll)
+
   const settings = {
     dots: false,
     infinite: true,

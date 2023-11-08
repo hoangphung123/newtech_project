@@ -65,10 +65,21 @@ header button {
   font-weight: 600;
   transform: scale(1.2); /* Tăng kích cỡ lên 120% */
   transform-origin: center; /* Đặt điểm neo ở giữa popover */
+  display: block;
+  clear: both;
+}
+.menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item {
+  margin-bottom: 10px;
+  /* Khoảng cách giữa các mục menu */
 }
 
 .ant-popover .ant-popover-inner {
-  width: 80px;
+  width: 180px;
   display: flex;
   align-items: center;
   justify-content: center
@@ -108,3 +119,5 @@ header button {
     background: none;
   }
 }
+
+

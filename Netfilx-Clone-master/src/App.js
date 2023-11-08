@@ -8,16 +8,20 @@ import Login from "./login/Login"
 import Register from "./register/Register"
 import Profile from "./profile/profile"
 import { useDispatch } from "react-redux"
-import { useEffect } from "react"
+import { Fragment, useEffect, useState } from "react"
 import jwtDecode from "jwt-decode"
 import * as UserService from './services/userStore'
 import { updateUser } from './redux/slides/userSlide'
+import AdminPage from "./admin/AdminPage/AdminPage"
+import Loading from "./components/LoadingComponent/Loading"
+import DefaultComponent from "./components/DefaultComponent/DefaultComponent"
 
 
 
 function App() {
   const dispatch = useDispatch();
-  
+  const [showFooter, setShowFooter] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleDecoded = () => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -46,15 +50,15 @@ function App() {
     console.log('refreshToken', refreshToken);
 
     if (decoded?.exp < currentTime.getTime() / 1000) {
-        const data = await UserService.refreshToken(refreshToken);
-        config.headers['token'] = `Bearer ${data?.access_token}`;
+      const data = await UserService.refreshToken(refreshToken);
+      config.headers['token'] = `Bearer ${data?.access_token}`;
     }
     return config;
-}, (err) => {
+  }, (err) => {
     return Promise.reject(err);
-});
+  });
 
-  
+
 
   const handleGetDetailUsers = async (id, token) => {
     try {
@@ -68,21 +72,24 @@ function App() {
 
   return (
     <>
-      <Router>
-        <Switch>
-          <Route path='/login' component={Login} />
-          <Route path='/Register' component={Register} />
-          <Route>
-            <Header />
-            <Switch>
-              <Route exact path='/' component={HomePage} />
-              <Route path='/profile' component={Profile} />
-              <Route path='/singlepage/:id' component={SinglePage} exact />
-            </Switch>
-            <Footer />
-          </Route>
-        </Switch>
-      </Router>
+      <Loading isLoading={isLoading} >
+        <Router>
+          <Switch>
+            <Route path='/login' component={Login} />
+            <Route path='/Register' component={Register} />
+            <Route path='/system/admin' render={(props) => <AdminPage {...props} isPrivate={true} showFooter={showFooter} />} />
+            <Route>
+              <Header />
+              <Switch>
+                <Route exact path='/' component={HomePage} />
+                <Route path='/profile' component={Profile} />
+                <Route path='/singlepage/:id' component={SinglePage} exact />
+              </Switch>
+              {showFooter && <Footer />}
+            </Route>
+          </Switch>
+        </Router>
+      </Loading>
     </>
   )
 }

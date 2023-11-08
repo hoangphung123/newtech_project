@@ -1,25 +1,33 @@
 import React, { useState } from "react"
 import "./header.css"
-import {  useSelector , useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Popover } from "antd";
-import {resetUser} from '../../redux/slides/userSlide'
+import { resetUser } from '../../redux/slides/userSlide'
 
-
-const Header = () => {
+const Header = ({ isHiddenSeries = false, isHiddenMovies = false, isHiddenPages = false, isHiddenPricing = false, isHiddenContact = false, isHidensearch= false }) => {
   const [Mobile, setMobile] = useState(false)
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
-  console.log('user',user)
+  console.log('user', user)
 
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     localStorage.removeItem('refresh_token');
     dispatch(resetUser())
   }
 
   const content = (
-    <div>
-      <p className="content_popover" onClick={handleLogout}>Logout</p>
-      <a href="/profile" className="content_popover">profile</a>
+    <div className="menu">
+      <div className="menu-item">
+        <a href="/profile" className="content_popover">Profile</a>
+      </div>
+      {user?.isAdmin && (
+        <div className="menu-item">
+          <a href="/system/admin" className="content_popover">System Management</a>
+        </div>
+      )}
+      <div className="menu-item" onClick={handleLogout}>
+        <p className="content_popover">Logout</p>
+      </div>
     </div>
   );
 
@@ -36,33 +44,47 @@ const Header = () => {
               <li>
                 <a href='/'>Home</a>
               </li>
-              <li>
-                <a href='/'>Series</a>
-              </li>
-              <li>
-                <a href='/'>Movies</a>
-              </li>
-              <li>
-                <a href='/'>Pages</a>
-              </li>
-              <li>
-                <a href='/'>Pricing</a>
-              </li>
-              <li>
-                <a href='/'>Contact</a>
-              </li>
+              {!isHiddenSeries && (
+                <li>
+                  <a href='/'>Series</a>
+                </li>
+              )}
+              {!isHiddenMovies && (
+                <li>
+                  <a href='/'>Movies</a>
+                </li>
+              )}
+              {!isHiddenPages && (
+                <li>
+                  <a href='/'>Pages</a>
+                </li>
+              )}
+              {!isHiddenPricing && (
+                <li>
+                  <a href='/'>Pricing</a>
+                </li>
+              )}
+              {!isHiddenContact && (
+                <li>
+                  <a href='/'>Contact</a>
+                </li>
+              )}
             </ul>
             <button className='toggle' onClick={() => setMobile(!Mobile)}>
               {Mobile ? <i className='fa fa-times'></i> : <i className='fa fa-bars'></i>}
             </button>
           </nav>
           <div className='account flexSB'>
-            <i className='fa fa-search'></i>
+            {!isHidensearch && (
+              <div>
+              <i className='fa fa-search'></i>
             <i class='fas fa-bell'></i>
-            <Popover placement="bottom"  content={content} trigger="click">
-              <i className='fas fa-user' style={{ cursor: 'pointer'}}></i>
+            </div>
+            )}
+            <Popover placement="bottom" content={content} trigger="click">
+              <i className='fas fa-user' style={{ cursor: 'pointer' }}></i>
             </Popover>
-            {user?.name? (
+            {user?.name ? (
               <i class='information'>{user.name}</i>
             ) : (
               <i class='information'></i>,
