@@ -21,6 +21,9 @@ const AdminUser = () => {
     const searchInput = useRef(null);
     const [isLoadingUsers, setIsLoadingUsers] = useState(true);
     const [users, setUsers] = useState([]);
+    const [selectedAll, setSelectedAll] = useState(false);
+    
+    
 
     const [stateUserDetails, setStateUserDetails] = useState({
         name: '',
@@ -129,6 +132,7 @@ const AdminUser = () => {
             // Xử lý lỗi nếu cần
         }
     };
+    
 
     const confirmDelete = (onOk) => {
         Modal.confirm({
@@ -253,6 +257,49 @@ const AdminUser = () => {
         },
     ];
 
+    const handleOnchangeDetailss = (e) => {
+        if (e.target.name === 'selection') {
+            // Handle the "Select All" checkbox
+            setSelectedAll(e.target.checked);
+            // Select or deselect all rows based on the checkbox state
+            const selectedRows = e.target.checked ? users.map(user => user._id) : [];
+            setRowSelected(selectedRows);
+        } else {
+            setStateUserDetails({
+                ...stateUserDetails,
+                [e.target.name]: e.target.value
+            });
+        }
+    };
+
+    const selectionColumn = {
+        title: (
+            <input
+                type="checkbox"
+                onChange={handleOnchangeDetailss}
+                checked={selectedAll}
+                name="selection"
+            />
+        ),
+        dataIndex: 'selection',
+        render: (_, record) => (
+            <input
+                type="checkbox"
+                onChange={() => {
+                    // Handle selection logic here
+                    setRowSelected(record._id);
+                }}
+                checked={selectedAll || rowSelected.includes(record._id)}
+            />
+        ),
+    };
+
+    
+    
+      
+      // Add the selection column to the columns array
+    const updatedColumns = [selectionColumn, ...columns];
+
 
     const handleOnchangeDetails = (e) => {
         setStateUserDetails({
@@ -265,7 +312,7 @@ const AdminUser = () => {
         <div>
             <WrapperHeader>Quản lý người dùng</WrapperHeader>
             <div style={{ marginTop: '20px' }}>
-                <TableComponent columns={columns} isLoading={isLoadingUsers} dataSource={users} onRow={(record, rowIndex) => {
+                <TableComponent columns={updatedColumns} isLoading={isLoadingUsers} dataSource={users} onRow={(record, rowIndex) => {
                     return {
                         onClick: (event) => {
                             setRowSelected(record._id)

@@ -19,10 +19,10 @@ const TableComponent = (props) => {
     return (
         <Loading isLoading={isLoading}>
         <Table
-            rowSelection={{
-                type: selectionType,
-                ...rowSelection,
-            }}
+            // rowSelection={{
+            //     type: selectionType,
+            //     ...rowSelection,
+            // }}
             columns={columns}
             dataSource={data}
             {...props}
