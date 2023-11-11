@@ -257,7 +257,7 @@ const AdminUser = () => {
         },
     ];
 
-    const handleOnchangeDetailss = (e) => {
+    const handleOnchangeDetailss = (e, record) => {
         if (e.target.name === 'selection') {
             // Handle the "Select All" checkbox
             setSelectedAll(e.target.checked);
@@ -265,10 +265,21 @@ const AdminUser = () => {
             const selectedRows = e.target.checked ? users.map(user => user._id) : [];
             setRowSelected(selectedRows);
         } else {
-            setStateUserDetails({
-                ...stateUserDetails,
-                [e.target.name]: e.target.value
-            });
+            // Handle individual row selection
+            const updatedSelectedRows = [...rowSelected];
+    
+            if (e.target.checked) {
+                // Add the row ID to the selected rows
+                updatedSelectedRows.push(record._id);
+            } else {
+                // Remove the row ID from the selected rows
+                const index = updatedSelectedRows.indexOf(record._id);
+                if (index !== -1) {
+                    updatedSelectedRows.splice(index, 1);
+                }
+            }
+    
+            setRowSelected(updatedSelectedRows);
         }
     };
 
@@ -276,7 +287,7 @@ const AdminUser = () => {
         title: (
             <input
                 type="checkbox"
-                onChange={handleOnchangeDetailss}
+                onChange={(e) => handleOnchangeDetailss(e, null)}
                 checked={selectedAll}
                 name="selection"
             />
@@ -285,18 +296,13 @@ const AdminUser = () => {
         render: (_, record) => (
             <input
                 type="checkbox"
-                onChange={() => {
-                    // Handle selection logic here
-                    setRowSelected(record._id);
-                }}
+                onChange={(e) => handleOnchangeDetailss(e, record)}
                 checked={selectedAll || rowSelected.includes(record._id)}
             />
         ),
     };
+    
 
-    
-    
-      
       // Add the selection column to the columns array
     const updatedColumns = [selectionColumn, ...columns];
 
