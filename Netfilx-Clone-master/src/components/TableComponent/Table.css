@@ -1,0 +1,18 @@
+:where(.css-dev-only-do-not-override-2i2tap).ant-pagination .ant-pagination-disabled .ant-pagination-item-link,
+:where(.css-dev-only-do-not-override-2i2tap).ant-pagination .ant-pagination-disabled:hover .ant-pagination-item-link {
+    color: white; /* Thay đổi màu chữ thành trắng */
+    cursor: not-allowed;
+}
+
+:where(.css-dev-only-do-not-override-2i2tap).ant-pagination .ant-pagination-item a {
+    display: block;
+    padding: 0 6px;
+    color: rgb(244, 74, 85);
+}
+
+:where(.css-dev-only-do-not-override-2i2tap).ant-pagination .ant-pagination-prev button, :where(.css-dev-only-do-not-override-2i2tap).ant-pagination .ant-pagination-next button {
+    /* color: rgba(0, 0, 0, 0.88); */
+    cursor: pointer;
+    user-select: none;
+    color: white;
+}

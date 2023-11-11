@@ -1,6 +1,7 @@
 import {  Table } from 'antd';
 import React from 'react'
 import Loading from '../../components/LoadingComponent/Loading';
+import "./Table.css"
 
 const TableComponent = (props) => {
     const { selectionType = 'checkbox', data = [], isLoading = false, columns = [] } = props

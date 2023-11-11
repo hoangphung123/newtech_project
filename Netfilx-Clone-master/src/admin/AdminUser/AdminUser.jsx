@@ -7,15 +7,14 @@ import Loading from '../../components/LoadingComponent/Loading';
 import { Button, Form, Space } from 'antd';
 import InputComponent from '../../components/InputComponent/InputComponent'
 import * as UserService from '../../services/userStore'
-import { useQuery } from '@tanstack/react-query'
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import { DeleteOutlined, SearchOutlined } from '@ant-design/icons'
 
 
 const AdminUser = () => {
-    const [rowSelected, setRowSelected] = useState('');
-    const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
-    const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+    const [ setRowSelected] = useState('');
+    const [ setIsOpenDrawer] = useState(false);
+
+    const [setIsModalOpenDelete] = useState(false);
     const searchInput = useRef(null);
     const [isLoadingUsers, setIsLoadingUsers] = useState(true);
     const [users, setUsers] = useState([]);
@@ -26,9 +25,6 @@ const AdminUser = () => {
         phone: '',
         isAdmin: false,
     });
-
-    const [form] = Form.useForm();
-
     
     const getAllUsers = async () => {
         const user = JSON.parse(localStorage.getItem("user"));
@@ -247,5 +243,7 @@ const AdminUser = () => {
         </div>
     )
 }
+
+
 
 export default AdminUser
