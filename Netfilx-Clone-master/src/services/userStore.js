@@ -59,3 +59,12 @@ export const updateUser = async (id, data, access_token) => {
     })
     return res.data
 }
+
+export const deleteUser = async (id, access_token) => {
+    const res = await axiosJWT.delete(`http://localhost:3000/api/user/delete-user/${id}`, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data
+}

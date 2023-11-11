@@ -4,17 +4,20 @@ import TableComponent from '../../components/TableComponent/TableComponent';
 import DrawerComponent from '../../components/DrawerComponent/DrawerComponent'
 import { useState } from 'react';
 import Loading from '../../components/LoadingComponent/Loading';
-import { Button, Form, Space } from 'antd';
+import { Button, Form, Space, Modal } from 'antd';
 import InputComponent from '../../components/InputComponent/InputComponent'
 import * as UserService from '../../services/userStore'
-import { DeleteOutlined, SearchOutlined } from '@ant-design/icons'
+import { updateUser } from '../../services/userStore';
+import { deleteUser } from '../../services/userStore';
+import { useQuery } from '@tanstack/react-query'
+import { DeleteOutlined, EditOutlined, SearchOutlined , InfoCircleOutlined} from '@ant-design/icons'
 
 
 const AdminUser = () => {
-    const [ setRowSelected] = useState('');
-    const [ setIsOpenDrawer] = useState(false);
-
-    const [setIsModalOpenDelete] = useState(false);
+    const [rowSelected, setRowSelected] = useState('');
+    const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+    const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
     const searchInput = useRef(null);
     const [isLoadingUsers, setIsLoadingUsers] = useState(true);
     const [users, setUsers] = useState([]);
@@ -25,13 +28,15 @@ const AdminUser = () => {
         phone: '',
         isAdmin: false,
     });
+
+    const [form] = Form.useForm();
+
     
     const getAllUsers = async () => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        const res = await UserService.getAllUser(user?.access_token)
+        const res = await UserService.getAllUser()
         console.log('res', res)
-        return {data: res?.data, key: 'users'}
-      }
+        return res
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,17 +52,38 @@ const AdminUser = () => {
         fetchData();
     }, []);
 
-    const handleDetailsProduct = () => {
-        setIsOpenDrawer(true)
-    }
+    const handleDetailsProduct = (record) => {
+        setIsOpenDrawer(true);
+    
+        // Thiết lập trạng thái
+        setStateUserDetails({
+            name: record.name,
+            email: record.email,
+            phone: record.phone,
+            isAdmin: record.isAdmin,
+        });
+    
+        // Sử dụng phương thức setFieldsValue của form để cập nhật các trường form
+        form.setFieldsValue({
+            name: record.name,
+            email: record.email,
+            phone: record.phone,
+            isAdmin: record.isAdmin,
+        });
+    };
 
-    const renderAction = () => {
-        return (
-            <div>
-                <DeleteOutlined style={{ color: 'red', fontSize: '28px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-            </div>
-        )
-    }
+    const renderAction = (text, record) => (
+        <div>
+            <InfoCircleOutlined 
+            style={{ color: 'blue', fontSize: '28px', cursor: 'pointer', paddingRight: '10px' }}
+            onClick={() => handleDetailsProduct(record)}
+            />
+            <DeleteOutlined
+                style={{ color: 'red', fontSize: '28px', cursor: 'pointer' }}
+                onClick={() => confirmDelete(() => handleDeleteUser(record))}
+            />
+        </div>
+    );
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -65,6 +91,53 @@ const AdminUser = () => {
 
     const handleReset = (clearFilters) => {
         clearFilters();
+    };
+
+    const handleFinish = async () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        try {
+            setIsLoadingUpdate(true);
+    
+            // Gọi hàm updateUser với thông tin cần cập nhật
+            await updateUser(rowSelected, stateUserDetails, user.access_token);
+    
+            // Cập nhật lại danh sách người dùng sau khi cập nhật thành công
+            const updatedUsers = await getAllUsers();
+            setUsers(updatedUsers.data);
+    
+            setIsLoadingUpdate(false);
+            setIsOpenDrawer(false); // Đóng drawer sau khi cập nhật thành công hoặc thất bại
+        } catch (error) {
+            console.error('Error updating user:', error);
+            setIsLoadingUpdate(false);
+            // Xử lý lỗi nếu cần
+        }
+    };
+
+    const handleDeleteUser = async (record) => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        try {
+            // Gọi hàm deleteUser với ID của người dùng và token
+            await deleteUser(record._id, user.access_token);
+    
+            // Cập nhật lại danh sách người dùng sau khi xóa thành công
+            const updatedUsers = await getAllUsers();
+            setUsers(updatedUsers.data);
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            // Xử lý lỗi nếu cần
+        }
+    };
+
+    const confirmDelete = (onOk) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc chắn muốn xóa?',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk,
+        });
     };
 
     const getColumnSearchProps = (dataIndex) => ({
@@ -200,13 +273,13 @@ const AdminUser = () => {
                     };
                 }} />
             </div>
-            {/* <DrawerComponent title='Chi tiết người dùng' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            <DrawerComponent title='Chi tiết người dùng' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
                 <Loading isLoading={isLoadingUpdate}>
                     <Form
                         name="basic"
                         labelCol={{ span: 2 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateUser}
+                        onFinish={handleFinish}
                         autoComplete="off"
                         form={form}
                     >
@@ -239,11 +312,9 @@ const AdminUser = () => {
                         </Form.Item>
                     </Form>
                 </Loading>
-            </DrawerComponent> */}
+            </DrawerComponent>
         </div>
     )
 }
-
-
 
 export default AdminUser
