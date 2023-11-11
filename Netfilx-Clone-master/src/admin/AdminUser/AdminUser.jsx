@@ -9,15 +9,15 @@ import InputComponent from '../../components/InputComponent/InputComponent'
 import * as UserService from '../../services/userStore'
 import { updateUser } from '../../services/userStore';
 import { deleteUser } from '../../services/userStore';
-import { useQuery } from '@tanstack/react-query'
-import { DeleteOutlined, EditOutlined, SearchOutlined , InfoCircleOutlined} from '@ant-design/icons'
+// import { useQuery } from '@tanstack/react-query'
+import { DeleteOutlined, SearchOutlined , InfoCircleOutlined} from '@ant-design/icons'
 
 
 const AdminUser = () => {
     const [rowSelected, setRowSelected] = useState('');
     const [isOpenDrawer, setIsOpenDrawer] = useState(false);
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
-    const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+    // const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
     const searchInput = useRef(null);
     const [isLoadingUsers, setIsLoadingUsers] = useState(true);
     const [users, setUsers] = useState([]);
@@ -89,9 +89,13 @@ const AdminUser = () => {
         </div>
     );
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    const handleSearch = (confirm) => {
         confirm();
     };
+
+    // const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    //     confirm();
+    // };
 
     const handleReset = (clearFilters) => {
         clearFilters();
