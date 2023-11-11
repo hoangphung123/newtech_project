@@ -22,11 +22,11 @@ const Header = ({ isHiddenSeries = false, isHiddenMovies = false, isHiddenPages 
       </div>
       {user?.isAdmin && (
         <div className="menu-item">
-          <a href="/system/admin" className="content_popover">System Management</a>
+          <a href="/system/admin" className="content_popover">Admin</a>
         </div>
       )}
       <div className="menu-item" onClick={handleLogout}>
-        <p className="content_popover">Logout</p>
+        <a href="/Login" className="content_popover">Logout</a>
       </div>
     </div>
   );
